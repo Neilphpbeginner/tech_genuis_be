@@ -1,13 +1,11 @@
 let express = require("express");
 let cookieParser = require("cookie-parser");
 let logger = require("morgan");
+let connectDBconfiguration = require("./DBconfig/mongooseConfig");
 let PORT = process.env.PORT || 8080;
 let usersRouter = require("./routes/users");
 let app = express();
-let dotenv = require("dotenv");
-
-dotenv.config();
-
+let dotenv = require("dotenv").config();
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
