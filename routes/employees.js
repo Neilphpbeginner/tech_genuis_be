@@ -1,6 +1,9 @@
 const express = require("express");
 const Employee = require("../mongooseScemas/employeeInfo");
-const { checkEmployee } = require("../middleware/employeeMiddleware");
+const {
+  checkEmployee,
+  checkAutentication,
+} = require("../middleware/employeeMiddleware");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -44,20 +47,48 @@ router.post("/addNewEmployee", async (req, res, next) => {
 });
 
 router.post("/login", checkEmployee, async (req, res, next) => {
-  if (req.user) {
-    const { employeeFirstName, employeeLastName } = req.user;
-    const encryption = await jwt.sign(
-      { employeeFirstName, employeeLastName },
-      "test",
-      { expiresIn: 60 * 60 },
-      { algorithm: "HS256" }
-    );
-    res.send(encryption);
-  } else {
-    res.send("Not Autherised to view this page");
+  try {
+    if (req.user) {
+      const { employeeFirstName, employeeLastName } = req.user;
+      const queryPassword = bcrypt.hashSync(req.body.employeePassword, salt);
+      console.log(req.user.employeePassword);
+      console.log(queryPassword);
+      const encryption = await jwt.sign(
+        { employeeFirstName, employeeLastName },
+        "test",
+        { expiresIn: 60 * 360 },
+        { algorithm: "HS256" }
+      );
+      res.send(encryption);
+    } else {
+      res.send("Not Autherised to view this page");
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
-router.post("/changePassword", checkEmployee, (req, res, next) => {});
+router.put(
+  "/changePassword",
+  checkEmployee,
+  checkAutentication,
+  async (req, res, next) => {
+    try {
+      if (req.user) {
+        const { employeeEmailAddress } = req.user;
+        const encryptedPassword = bcrypt.hashSync(req.body.newPassword, salt);
+        let changePassword = { employeePassword: encryptedPassword };
+        let changeEmployeePassword = await Employee.findOneAndUpdate(
+          { employeeEmailAddress: employeeEmailAddress },
+          changePassword
+        );
+
+        res.send("Password updated");
+      }
+    } catch (error) {
+      res.send("User not found on system");
+    }
+  }
+);
 
 module.exports = router;
