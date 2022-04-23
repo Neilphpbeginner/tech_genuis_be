@@ -16,8 +16,12 @@ const checkEmployee = async (req, res, next) => {
 };
 
 const checkAutentication = (req, res, next) => {
-  const authBeamer = req.header["authorization"].split(" ")[1];
-  console.log(authBeamer);
+  const authBeamer = req.headers["authorization"].split(" ")[1];
+  if (authBeamer) {
+    next();
+  } else {
+    res.send("No Go");
+  }
 };
 
 module.exports = { checkEmployee, checkAutentication };
