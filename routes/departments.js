@@ -7,7 +7,7 @@ router.get("/getAllDepartments", async (req, res, next) => {
     const findall = await Department.find();
     res.send(findall);
   } catch (error) {
-    console.log(error);
+    res.send(error);
   }
 });
 
@@ -27,25 +27,28 @@ router.post("/addNewDepartment", async (req, res, next) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    res.send(error);
   }
 });
 
-router.get("getDepartments/:departmentName", async (req, res, next) => {
+router.get("/getDepartments/:departmentQuery", async (req, res, next) => {
   try {
     const { departmentQuery } = req.params;
-    const findDepartment = await Department.findOne(
-      departmentQuery,
+    const findDepartment = await Department.find(
+      {
+        departmantName: departmentQuery,
+      },
       (error, department) => {
         if (error) {
-          console.log(error);
+          res.send(false);
+          next();
         } else {
-          res.send(department);
+          res.send(true);
         }
       }
     );
   } catch (error) {
-    console.log(error);
+    res.send(error);
   }
 });
 

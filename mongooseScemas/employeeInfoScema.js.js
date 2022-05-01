@@ -1,4 +1,5 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 employeeInformation = new mongoose.Schema({
   employeeFirstName: String,
@@ -7,7 +8,12 @@ employeeInformation = new mongoose.Schema({
   employeeEmailAddress: String,
   employeePassword: String,
   employeeManager: String,
-  employeeStatus: String,
+  employeeStatus: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Roles.roles.Manager",
+    },
+  ],
   date: { type: Date, default: Date.now },
 });
 

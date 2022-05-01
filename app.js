@@ -5,6 +5,7 @@ let connectDBconfiguration = require("./DBconfig/mongooseConfig");
 let PORT = process.env.PORT || 8080;
 let employeesRouter = require("./routes/employees");
 let departmentRoute = require("./routes/departments");
+let employeeRoles = require("./routes/employeeAuth");
 let app = express();
 let dotenv = require("dotenv").config();
 
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use("/users", employeesRouter);
 app.use("/departments", departmentRoute);
+app.use("/roles", employeeRoles);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

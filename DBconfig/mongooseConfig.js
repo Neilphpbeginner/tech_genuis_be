@@ -6,5 +6,5 @@ module.export = mongoose
   )
   .then(console.log("Connected to DataBase"))
   .catch((error) => {
-    console.log(error);
+    console.log("Connection Error");
   });

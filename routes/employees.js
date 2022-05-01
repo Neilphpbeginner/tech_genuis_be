@@ -31,7 +31,6 @@ router.post("/addNewEmployee", async (req, res, next) => {
       employeeEmailAddress: req.body.employeeEmailAddress,
       employeePassword: encryptedPassword,
       employeeManager: req.body.employeeManager,
-      employeeStatus: req.body.employeeStatus,
     });
 
     let newEnry = await employee.save((error) => {
@@ -51,8 +50,6 @@ router.post("/login", checkEmployee, async (req, res, next) => {
     if (req.user) {
       const { employeeFirstName, employeeLastName } = req.user;
       const queryPassword = bcrypt.hashSync(req.body.employeePassword, salt);
-      console.log(req.user.employeePassword);
-      console.log(queryPassword);
       const encryption = await jwt.sign(
         { employeeFirstName, employeeLastName },
         "test",
