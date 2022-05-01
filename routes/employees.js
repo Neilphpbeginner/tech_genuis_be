@@ -1,5 +1,5 @@
 const express = require("express");
-const Employee = require("../mongooseScemas/employeeInfo");
+const Employee = require("../mongooseScemas/employeeInfoScema.js");
 const {
   checkEmployee,
   checkAutentication,
