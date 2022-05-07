@@ -14,43 +14,78 @@ const salt = 12;
 router.get("/", async (req, res, next) => {
   try {
     const allEmployees = await Employee.find();
-    res.send(allEmployees);
+    const newData = await Roles.findOne({ roles: "Employee" });
+    res.send(newData);
   } catch (error) {
-    console.log(error);
+    res.send({
+      message: error,
+    });
   }
+});
+
+router.get("/allEmployees", async (req, res, next) => {
+  const newData = await Roles.findOne({ roles: "Employee" });
+  res.send(newData.employees);
 });
 
 router.post("/addNewEmployee", async (req, res, next) => {
   try {
     const defaultPassword = "Password123#";
     const encryptedPassword = bcrypt.hashSync(defaultPassword, salt);
-    Roles.findOne({ roles: "Employee" }, (error, role) => {
+    const newData = await Roles.findOne({ roles: "Employee" });
+    const employee = new Employee({
+      employeeFirstName: req.body.employeeFirstName,
+      employeeLastName: req.body.employeeLastName,
+      employeeContactNo: req.body.employeeContactNo,
+      employeeEmailAddress: req.body.employeeEmailAddress,
+      employeePassword: encryptedPassword,
+      employeeManager: req.body.employeeManager,
+    });
+    const saveData = employee.save((error) => {
       if (error) {
         res.send({
-          message: error,
+          message: "No data saved",
         });
       } else {
-        const employee = new Employee({
-          employeeFirstName: req.body.employeeFirstName,
-          employeeLastName: req.body.employeeLastName,
-          employeeContactNo: req.body.employeeContactNo,
-          employeeEmailAddress: req.body.employeeEmailAddress,
-          employeePassword: encryptedPassword,
-          employeeManager: req.body.employeeManager,
-          employeeStatus: role._id,
-        });
-        const saveData = employee.save((error, newEmployee) => {
-          if (error) {
-            res.send({
-              message: "No data saved",
-            });
-          } else {
-          }
-          res.send({
-            message: "New Empoyee",
-          });
-        });
       }
+      newData.employees.push(employee);
+      newData.save();
+      res.send({
+        message: "New Empoyee",
+      });
+    });
+  } catch (error) {
+    res.send({
+      message: "Did not work",
+    });
+  }
+});
+
+router.post("/addNewManager", async (req, res, next) => {
+  try {
+    const defaultPassword = "Password123#";
+    const encryptedPassword = bcrypt.hashSync(defaultPassword, salt);
+    const newData = await Roles.findOne({ roles: "Manager" });
+    const manager = new Employee({
+      employeeFirstName: req.body.employeeFirstName,
+      employeeLastName: req.body.employeeLastName,
+      employeeContactNo: req.body.employeeContactNo,
+      employeeEmailAddress: req.body.employeeEmailAddress,
+      employeePassword: encryptedPassword,
+      employeeManager: req.body.employeeManager,
+    });
+    const saveData = manager.save((error) => {
+      if (error) {
+        res.send({
+          message: "No data saved",
+        });
+      } else {
+      }
+      newData.employees.push(employee);
+      newData.save();
+      res.send({
+        message: "New Manager",
+      });
     });
   } catch (error) {
     res.send({
@@ -75,7 +110,9 @@ router.post("/login", checkEmployee, async (req, res, next) => {
       res.send("Not Autherised to view this page");
     }
   } catch (error) {
-    console.log(error);
+    res.send({
+      message: "Employee Role not found",
+    });
   }
 });
 
