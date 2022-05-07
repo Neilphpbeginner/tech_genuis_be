@@ -8,10 +8,10 @@ employeeInformation = new mongoose.Schema({
   employeeEmailAddress: String,
   employeePassword: String,
   employeeManager: String,
-  // employeeStatus: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "Roles",
-  // },
+  employeeStatus: {
+    type: Schema.Types.ObjectId,
+    ref: "Roles",
+  },
   date: { type: Date, default: Date.now },
 });
 
