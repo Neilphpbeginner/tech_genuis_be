@@ -1,4 +1,4 @@
-const Employee = require("../mongooseScemas/employeeInfoScema.js");
+const Employee = require("../mongooseSchemas/employeeInfoSchema");
 
 const checkEmployee = async (req, res, next) => {
   try {

@@ -1,5 +1,5 @@
 const express = require("express");
-const Employee = require("../mongooseScemas/employeeInfoScema.js");
+const Employee = require("../mongooseSchemas/employeeInfoSchema");
 const {
   checkEmployee,
   checkAutentication,
@@ -7,9 +7,10 @@ const {
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const Roles = require("../mongooseSchemas/rolesSchema");
 const salt = 12;
 
-/* GET users listing. */
 router.get("/", async (req, res, next) => {
   try {
     const allEmployees = await Employee.find();
@@ -20,28 +21,41 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/addNewEmployee", async (req, res, next) => {
-  const defaultPassword = "Password123#";
-  const encryptedPassword = bcrypt.hashSync(defaultPassword, salt);
-
   try {
-    const employee = new Employee({
-      employeeFirstName: req.body.employeeFirstName,
-      employeeLastName: req.body.employeeLastName,
-      employeeContactNo: req.body.employeeContactNo,
-      employeeEmailAddress: req.body.employeeEmailAddress,
-      employeePassword: encryptedPassword,
-      employeeManager: req.body.employeeManager,
-    });
-
-    let newEnry = await employee.save((error) => {
+    const defaultPassword = "Password123#";
+    const encryptedPassword = bcrypt.hashSync(defaultPassword, salt);
+    Roles.findOne({ roles: "Employee" }, (error, role) => {
       if (error) {
-        console.log(error);
+        res.send({
+          message: error,
+        });
       } else {
-        res.send("New Employee Added");
+        const employee = new Employee({
+          employeeFirstName: req.body.employeeFirstName,
+          employeeLastName: req.body.employeeLastName,
+          employeeContactNo: req.body.employeeContactNo,
+          employeeEmailAddress: req.body.employeeEmailAddress,
+          employeePassword: encryptedPassword,
+          employeeManager: req.body.employeeManager,
+          employeeStatus: role._id,
+        });
+        const saveData = employee.save((error, newEmployee) => {
+          if (error) {
+            res.send({
+              message: "No data saved",
+            });
+          } else {
+          }
+          res.send({
+            message: "New Empoyee",
+          });
+        });
       }
     });
   } catch (error) {
-    console.log(error);
+    res.send({
+      message: "Did not work",
+    });
   }
 });
 

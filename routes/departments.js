@@ -1,5 +1,7 @@
 const express = require("express");
-const Department = require("../mongooseScemas/departmentScema");
+const { default: mongoose } = require("mongoose");
+const Department = require("../mongooseSchemas/departmentSchema");
+const Employees = require("../mongooseSchemas/employeeInfoSchema");
 const router = express.Router();
 
 router.get("/getAllDepartments", async (req, res, next) => {
@@ -15,13 +17,14 @@ router.post("/addNewDepartment", async (req, res, next) => {
   const { newDepartment, activeDepartment } = req.body;
   try {
     const newlyAddedDepartment = new Department({
+      _id: new mongoose.Types.ObjectId(),
       departmantName: newDepartment,
       status: activeDepartment,
     });
 
     let addingNewDepartment = await newlyAddedDepartment.save((error) => {
       if (error) {
-        console.log(error);
+        res.send(error);
       } else {
         res.send("New Department Added");
       }
